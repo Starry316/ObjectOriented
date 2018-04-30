@@ -5,8 +5,8 @@ import java.awt.event.MouseEvent;
 
 public class Main extends JFrame{
     private int height,width;
-    private panel game;
-
+    private GameBoard game;
+   // private Card test ;
     Main(int height, int width) {
         this.height = height;
         this.width = width;
@@ -20,20 +20,21 @@ public class Main extends JFrame{
         setBounds(screenWidth / 2 - width / 2, screenHeight / 2 - height / 2, width, height);
         setLayout(null);
         setVisible(true);
-        game=new panel(width,height,this);
+        game=new GameBoard(width,height,this);
         game.Init();
+
         getContentPane().add(game);
-        game.setVisible(true);
+        //game.setVisible(true);
 //        getContentPane().add(heapSort);
 //        heapSort.setVisible(false);
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                System.out.println("鼠标位置: x "+e.getX() + " , y " + e.getY());
-            }
-        });
+//        addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//                System.out.println("鼠标位置: x "+e.getX() + " , y " + e.getY());
+//            }
+//        });
 
     }
 
