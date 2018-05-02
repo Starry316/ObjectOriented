@@ -55,6 +55,11 @@ public class DrawPile extends JPanel {
         return null;
     }
     public Card peek(){
+        if(pos<0){
+            pos=number-1;
+            return pile.get(pos);
+        }
+
         return pile.get(pos);
     }
 

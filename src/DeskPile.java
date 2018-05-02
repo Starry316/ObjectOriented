@@ -121,7 +121,9 @@ public class DeskPile  {
         return null;
     }
     public Card peek(){
+        if(number>0)
         return pile.peek();
+        return null;
     }
     public List<Card> peek(int n){
         List<Card> list = new LinkedList<Card>();

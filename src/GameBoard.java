@@ -73,7 +73,27 @@ public class GameBoard extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(drawPile.checkSelected(e.getX(),e.getY()))drawPile.change();
+                if(e.isMetaDown()){//检测鼠标右键单击
+                    System.out.println("右键单击");
+                    for(DeskPile i:deskPiles){
+                        for(CardPile j:piles){
+                            if(j.checkMoveIn(i.peek())){
+                                j.pushCard(i.pop());
+                                System.out.println("可以移动");
+                                return;
+                            }
+                        }
+                    }
+                    for(CardPile j:piles){
+                        if(j.checkMoveIn(drawPile.peek())){
+                            j.pushCard(drawPile.pop());
+                            System.out.println("可以移动draw");
+                            return;
+                        }
+                    }
+                }
+                else if(drawPile.checkSelected(e.getX(),e.getY()))drawPile.change();
+
             }
 
 
@@ -182,7 +202,6 @@ public class GameBoard extends JPanel {
             cards[i]=cards[j];
             cards[j]=temp;
         }
-
         drawPile=new DrawPile(200,200,96,130);
 
         piles[0]= new CardPile(500,200,96,130,0);
@@ -198,7 +217,8 @@ public class GameBoard extends JPanel {
                 if(j!=0)deskPiles[i].peek().setSide(BACKSIDE);
             }
         }
-        while (count>0)drawPile.pushCard(cards[count--]);
+
+        while (count>=0)drawPile.pushCard(cards[count--]);
         new paintThread().start();
 
 

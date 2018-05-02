@@ -78,7 +78,12 @@ public class CardPile extends JPanel {
             }
             return false;
         }
-
+        public boolean checkMoveIn(Card card){
+            if (this.number>0&&pile.peek().getNumber() == card.getNumber() - 1 && pile.peek().getType() == card.getType())
+                return true;
+            else if (this.number == 0 && card.getNumber() == 1) return true;
+            return false;
+        }
 
 
         public int getPosition_x() {
