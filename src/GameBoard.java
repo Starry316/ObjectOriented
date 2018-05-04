@@ -17,6 +17,7 @@ public class GameBoard extends JPanel {
     private int origin_x;
     private int origin_y;
     private int selectedPile;
+    private int timeCount;
     private boolean movebackflag=false;
     private Main mainBoard = null;
     private int type[] ={HEART,DIAMOND,SPADE,CLUB};
@@ -63,9 +64,11 @@ public class GameBoard extends JPanel {
                 }
                  if(drawPile.checkSelected(e.getX(),e.getY())){
                      movingCard=drawPile.peek();
-                     origin_x=movingCard.getPosition_x();
-                     origin_y=movingCard.getPosition_y();
-                     selectedPile=DRAWPILE;
+                     if(movingCard!=null) {
+                         origin_x = movingCard.getPosition_x();
+                         origin_y = movingCard.getPosition_y();
+                         selectedPile = DRAWPILE;
+                     }
                  }
 
             }
@@ -77,7 +80,7 @@ public class GameBoard extends JPanel {
                     System.out.println("右键单击");
                     for(DeskPile i:deskPiles){
                         for(CardPile j:piles){
-                            if(j.checkMoveIn(i.peek())){
+                            if(i.getNumber()>0&&j.checkMoveIn(i.peek())){
                                 j.pushCard(i.pop());
                                 System.out.println("可以移动");
                                 return;
@@ -167,7 +170,8 @@ public class GameBoard extends JPanel {
                     }
                 }
             }
-        });
+        }
+        );
 
     }
 
@@ -183,12 +187,13 @@ public class GameBoard extends JPanel {
         }
         drawPile.paintCardPile(gg);
         if (movingCard!=null)
-        movingCard.paintCard(gg);
+        movingCard.paintSelectedCard(gg);
         if(movingCards!=null)
         for(Card i:movingCards)
-            i.paintCard(gg);
+            i.paintSelectedCard(gg);
     }
     public void Init() {
+        timeCount=0;
         cards=new Card[52];
         int count =-1;
         for(int i=0;i<4;i++)
@@ -243,8 +248,10 @@ public class GameBoard extends JPanel {
         public void run() {
             while(true){
                 repaint();
+
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(16);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;

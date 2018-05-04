@@ -79,10 +79,8 @@ public class DeskPile  {
                             upnum++;
                         }
                     }
-                    System.out.println(upnum);
                     //两种情况，选择一个和选择多个。
                     if (Math.abs(y - (position_y + height / 2) - margin * (number - 1)) < height / 2) {   //选择一个
-                        System.out.println(Math.abs(y - (position_y + height / 2) - margin * (number - 1)));
                         return 1;
 
                     } else {
@@ -98,7 +96,7 @@ public class DeskPile  {
         if(number>0){
             number--;
             Card tmp =pile.pop();
-            if (pile.peek()!=null){
+            if (pile.size()>0){
                 pile.peek().setSide(UPSIDE);
             }
             return tmp;

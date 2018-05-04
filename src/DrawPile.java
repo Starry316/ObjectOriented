@@ -36,7 +36,7 @@ public class DrawPile extends JPanel {
     }
     public void change(){
         pos--;
-        if(pos<0)pos=number-1;
+        if(pos<-1)pos=number-1;
     }
     public boolean checkSelected(int x ,int y){
         if(number>0)
@@ -56,8 +56,9 @@ public class DrawPile extends JPanel {
     }
     public Card peek(){
         if(pos<0){
-            pos=number-1;
-            return pile.get(pos);
+           // /pos=number-1;
+            return null;
+           // return pile.get(pos);
         }
 
         return pile.get(pos);

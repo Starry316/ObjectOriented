@@ -10,6 +10,12 @@ public class Main extends JFrame{
     Main(int height, int width) {
         this.height = height;
         this.width = width;
+//        JMenuBar jMenuBar = new JMenuBar();
+//        JMenuItem item1 = new JMenuItem("开始");
+//        JMenuItem item2 = new JMenuItem("帮助");
+//        jMenuBar.add(item1);
+//        jMenuBar.add(item2);
+//        setJMenuBar(jMenuBar);
         setTitle("纸牌游戏");
         //得到屏幕大小
         Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
