@@ -1,3 +1,5 @@
+import util.ImagePool;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -40,11 +42,8 @@ public class Card extends JPanel {
         } catch (IOException e) {
                 e.printStackTrace();
         }
-
-
-
         try {
-            String pictureBack = "picture/myback.png";
+            String pictureBack = "picture/back2.png";
             ImageIcon icon=new ImageIcon(pictureBack);
             imageBack = ImageIO.read(new   File(pictureBack));
         } catch (IOException e) {
@@ -56,23 +55,41 @@ public class Card extends JPanel {
 
     }
     public void paintCard(Graphics2D g){
-        Stroke s =g.getStroke();
-
-        if(side==UPSIDE)
-        g.drawImage(imageUp, position_x, position_y, 96, 130, null);
-        else g.drawImage(imageBack, position_x, position_y, 96, 130, null);
+        g.setColor(Color.BLACK);
+        AlphaComposite  alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f);
+        g.setComposite(alphaComposite1);//透明度
+        g.fillRoundRect(position_x-1,position_y-1,CARDWIDTH+2,CARDHEIGHT+2,25,25);
+        alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+        g.setComposite(alphaComposite1);//透明度
+        if(side==UPSIDE) {
+            switch (type){
+                case DIAMOND :imageUp= ImagePool.cardImages[2][number-1];break;
+                case HEART :imageUp= ImagePool.cardImages[0][number-1];break;
+                case CLUB :imageUp= ImagePool.cardImages[3][number-1];break;
+                case SPADE:imageUp= ImagePool.cardImages[1][number-1];break;
+            }
+            g.drawImage(imageUp, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
+        }
+        else{
+            imageBack=ImagePool.backimage;
+            g.drawImage(imageBack, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
+        }
     }
 
     public void paintSelectedCard(Graphics2D g){
-        Stroke s =g.getStroke();
-        AlphaComposite alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.42f);
+        g.setColor(Color.BLACK);
+        AlphaComposite  alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.42f);
         g.setComposite(alphaComposite1);//透明度
-        g.fillRect(position_x-4,position_y-4,104,138);
-        AlphaComposite alphaComposite2=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
-        g.setComposite(alphaComposite2);
+        g.fillRoundRect(position_x+15,position_y+15,CARDWIDTH,CARDHEIGHT,20,20);
+        alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
+        g.setComposite(alphaComposite1);//透明度
+        g.setColor(new Color(255,252,102));
+        g.fillRoundRect(position_x-4,position_y-4,CARDWIDTH+8,CARDHEIGHT+8,20,20);
+        alphaComposite1=AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+        g.setComposite(alphaComposite1);
         if(side==UPSIDE)
-            g.drawImage(imageUp, position_x, position_y, 96, 130, null);
-        else g.drawImage(imageBack, position_x, position_y, 96, 130, null);
+            g.drawImage(imageUp, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
+        else g.drawImage(imageBack, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
 
     }
     public void move(int moveX,int moveY){
@@ -119,5 +136,11 @@ public class Card extends JPanel {
 
     public int getSide() {
         return side;
+    }
+    public int getMiddleX(){
+        return position_x+CARDWIDTH/2;
+    }
+    public int getMiddleY(){
+        return position_y+CARDHEIGHT/2;
     }
 }

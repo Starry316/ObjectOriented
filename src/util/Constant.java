@@ -16,4 +16,6 @@ public  class Constant {
     public final static int DESKPILE=0;
     public final static int CARDPILE=1;
     public final static int DRAWPILE=2;
+    public final static int CARDWIDTH=102;
+    public final static int CARDHEIGHT=152;
 }

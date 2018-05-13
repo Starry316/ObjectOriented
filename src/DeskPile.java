@@ -14,7 +14,7 @@ public class DeskPile  {
     private int width;
     private int height;
     private int number;
-    private int margin =20;
+    private int margin =40;
     private Stack<Card> pile;
     public DeskPile(){
 
@@ -31,7 +31,7 @@ public class DeskPile  {
     public void paintCardPile(Graphics2D g,List<Card> movingCards){
         Stroke s =g.getStroke();
         g.setColor(Color.cyan);
-        g.fillRect(position_x,position_y,width,height);
+       // g.drawRoundRect(position_x,position_y,width,height,20,20);
         g.setStroke(s);
         for(Card i :pile){
             if(movingCards!=null) {

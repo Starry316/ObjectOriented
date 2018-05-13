@@ -1,7 +1,12 @@
+import util.ImagePool;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+
+import static util.Constant.CARDHEIGHT;
+import static util.Constant.CARDWIDTH;
 
 /**
  * Created by Starry on 2018/4/28.
@@ -12,7 +17,6 @@ public class CardPile extends JPanel {
         private int width;
         private int height;
         private int number;
-        private int margin =20;
         private Stack<Card> pile;
         public CardPile (){
 
@@ -28,7 +32,8 @@ public class CardPile extends JPanel {
         public void paintCardPile(Graphics2D g,Card movingCard){
             Stroke s =g.getStroke();
             g.setColor(Color.cyan);
-            g.fillRect(position_x,position_y,width,height);
+           // g.drawRect(position_x,position_y,width,height);
+            g.drawImage(ImagePool.pileImage, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
             g.setStroke(s);
             for(Card i :pile){
                 if(movingCard!=null) {

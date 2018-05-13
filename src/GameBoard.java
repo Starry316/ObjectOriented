@@ -1,6 +1,9 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -14,11 +17,14 @@ public class GameBoard extends JPanel {
     private int width = 0;
     private int x_loacte = 0;
     private int y_loacte = 0;
+    private int dis_x=0;
+    private int dis_y=0;
     private int origin_x;
     private int origin_y;
     private int selectedPile;
-    private int timeCount;
-    private boolean movebackflag=false;
+    private int timeCountS;
+    private int timeCountM;
+    private boolean startFlag=false;
     private Main mainBoard = null;
     private int type[] ={HEART,DIAMOND,SPADE,CLUB};
     private Card cards[];
@@ -29,13 +35,21 @@ public class GameBoard extends JPanel {
     private DeskPile deskPiles[]=new DeskPile[7];
     private CardPile originPile;
     private DeskPile originDeskPile;
+    private Button restartButton;
+    private Image table;
+
     public GameBoard(int width, int height, Main mainBoard) {
+
         this.mainBoard = mainBoard;
         this.height = height;
         this.width = width;
         setLayout(null);
         setBounds(x_loacte, y_loacte, width, height);
-        setBackground(Color.white);
+        try {
+            table = ImageIO.read(new File("picture/table.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setVisible(true);
         setFocusable(true);
 
@@ -43,12 +57,15 @@ public class GameBoard extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
              //   super.mousePressed(e);
+                if(!startFlag)startFlag=true; //记录游戏开始
                 for(CardPile i:piles)
                     if(i.checkSelected(e.getX(),e.getY())){
                         movingCard=i.peek();
                         originPile=i;
                         origin_x=movingCard.getPosition_x();
                         origin_y=movingCard.getPosition_y();
+                        dis_x=e.getX()-origin_x;
+                        dis_y=e.getY()-origin_y;
                         selectedPile=CARDPILE;
                     }
                 for(DeskPile i:deskPiles) {
@@ -59,6 +76,8 @@ public class GameBoard extends JPanel {
                         originDeskPile = i;
                         origin_x = movingCards.get(0).getPosition_x();
                         origin_y = movingCards.get(0).getPosition_y();
+                        dis_x=e.getX()-origin_x;
+                        dis_y=e.getY()-origin_y;
                         selectedPile = DESKPILE;
                     }
                 }
@@ -67,6 +86,8 @@ public class GameBoard extends JPanel {
                      if(movingCard!=null) {
                          origin_x = movingCard.getPosition_x();
                          origin_y = movingCard.getPosition_y();
+                         dis_x=e.getX()-origin_x;
+                         dis_y=e.getY()-origin_y;
                          selectedPile = DRAWPILE;
                      }
                  }
@@ -76,6 +97,9 @@ public class GameBoard extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+
+                if(!startFlag)startFlag=true; //记录游戏开始
+                if (restartButton.checkIn(e.getX(),e.getY()))InitWithoutWashCards();
                 if(e.isMetaDown()){//检测鼠标右键单击
                     System.out.println("右键单击");
                     for(DeskPile i:deskPiles){
@@ -88,14 +112,14 @@ public class GameBoard extends JPanel {
                         }
                     }
                     for(CardPile j:piles){
-                        if(j.checkMoveIn(drawPile.peek())){
+                        if(drawPile.getPos()>=0&&j.checkMoveIn(drawPile.peek())){
                             j.pushCard(drawPile.pop());
                             System.out.println("可以移动draw");
                             return;
                         }
                     }
                 }
-                else if(drawPile.checkSelected(e.getX(),e.getY()))drawPile.change();
+                else if(drawPile.checkClicked(e.getX(),e.getY()))drawPile.change();
 
             }
 
@@ -103,7 +127,8 @@ public class GameBoard extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                // super.mouseMoved(e);
-                System.out.println("移动"+e.getX());
+                if (restartButton.checkIn(e.getX(),e.getY()))restartButton.setStatus(1);
+
             }
 
             @Override
@@ -112,7 +137,7 @@ public class GameBoard extends JPanel {
            //     super.mouseReleased(e);
                 if(movingCard!=null){
                     for(CardPile i:piles){
-                        if(i.checkMoveIn(movingCard,e.getX(),e.getY())) {
+                        if(i.checkMoveIn(movingCard,movingCard.getMiddleX(),movingCard.getMiddleY())) {
                             i.pushCard( movingCard);
                             originPilePOP();
                             movingCard=null;
@@ -121,7 +146,7 @@ public class GameBoard extends JPanel {
                     }
                     for(DeskPile i:deskPiles){
                    //     System.out.println(i.checkMoveIn(movingCard,e.getX(),e.getY())+""+movingCard.getNumber());
-                        if(i.checkMoveIn(movingCard,e.getX(),e.getY())) {
+                        if(i.checkMoveIn(movingCard,movingCard.getMiddleX(),movingCard.getMiddleY())) {
                             i.pushCard( movingCard);
                             originPilePOP();
                             movingCard=null;
@@ -134,7 +159,7 @@ public class GameBoard extends JPanel {
                 }
                 else if(movingCards!=null){
                     for(DeskPile i:deskPiles){
-                        if(i.checkMoveIn(movingCards,e.getX(),e.getY())) {
+                        if(i.checkMoveIn(movingCards,movingCards.get(0).getMiddleX(),movingCards.get(0).getMiddleY())) {
                             i.pushCard( movingCards);
                             originDeskPile.pop(movingCards.size());
                             movingCards=null;
@@ -142,7 +167,7 @@ public class GameBoard extends JPanel {
                         }
                     }
                     for(CardPile i:piles){
-                        if(movingCards.size()==1&&i.checkMoveIn(movingCards.get(0),e.getX(),e.getY())) {
+                        if(movingCards.size()==1&&i.checkMoveIn(movingCards.get(0),movingCards.get(0).getMiddleX(),movingCards.get(0).getMiddleY())) {
                             i.pushCard( movingCards.get(0));
                             originDeskPile.pop(1);
                             movingCards=null;
@@ -150,7 +175,7 @@ public class GameBoard extends JPanel {
                         }
                     }
                     for(int i=0;i<movingCards.size();i++) {
-                        movingCards.get(i).move(origin_x,origin_y+20*i);
+                        movingCards.get(i).move(origin_x,origin_y+40*i);
                     }movingCards = null;
                 }
             }
@@ -159,26 +184,50 @@ public class GameBoard extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
+                if(!startFlag)startFlag=true; //记录游戏开始
                 if(movingCard!=null){
-                    movingCard.setPosition_x(e.getX()-35);
-                    movingCard.setPosition_y(e.getY()-50);
+                    movingCard.setPosition_x(e.getX()-dis_x);
+                    movingCard.setPosition_y(e.getY()-dis_y);
                 }
                 if(movingCards!=null){
                     for(int i=0;i<movingCards.size();i++){
-                        movingCards.get(i).setPosition_x(e.getX()-35);
-                        movingCards.get(i).setPosition_y(e.getY()-50+i*20);
+                        movingCards.get(i).setPosition_x(e.getX()-dis_x);
+                        movingCards.get(i).setPosition_y(e.getY()-dis_y+i*40);
                     }
                 }
             }
-        }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                // super.mouseMoved(e);
+                if (restartButton.checkIn(e.getX(),e.getY()))restartButton.setStatus(1);
+                else restartButton.setStatus(0);
+            }}
         );
 
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if(startFlag)timeCountS+=16;
+        if (timeCountS>60000){
+            timeCountS-=60000;
+            timeCountM++;
+        }
         Graphics2D gg = (Graphics2D) g;
-
+       // gg.drawImage(table,0,0,width,height,null);
+        gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        gg.setColor(new Color(129,194,214));
+        gg.fillRect(0,0,width,height);
+        gg.setColor(new Color(29,176,184));
+        gg.fillRect(0,0,width,60);
+        gg.setColor(Color.white);
+        gg.setFont(new Font("Arial",Font.BOLD, 30));
+        if (timeCountS/1000<10)
+            gg.drawString("Time "+timeCountM+":0"+(timeCountS/1000)+"",200,40);
+        else
+            gg.drawString("Time "+timeCountM+":"+(timeCountS/1000)+"",200,40);
+        restartButton.paintButton(gg);
         for(CardPile i :piles){
             i.paintCardPile(gg,movingCard);
         }
@@ -192,8 +241,33 @@ public class GameBoard extends JPanel {
         for(Card i:movingCards)
             i.paintSelectedCard(gg);
     }
+    public void InitWithoutWashCards() {
+        timeCountS=0;
+        timeCountM=0;
+        startFlag=false;
+        int count =51;
+        for(int i=3;i<7;i++)
+            while (piles[i-3].getNumber()>0)
+            piles[i-3].pop();
+        for(int i=0;i<7;i++){
+            while (deskPiles[i].getNumber()>0)
+            deskPiles[i].pop();
+        }
+        drawPile.clear();
+        for(int i=0;i<7;i++){
+            for(int j=i;j>=0;j--){
+                deskPiles[i].pushCard(cards[count--]);
+                if(j!=0)deskPiles[i].peek().setSide(BACKSIDE);
+            }
+        }
+
+        while (count>=0)drawPile.pushCard(cards[count--]);
+    }
     public void Init() {
-        timeCount=0;
+        timeCountS=0;
+        timeCountM=0;
+        startFlag=false;
+        restartButton=new Button(915,10,120,40);
         cards=new Card[52];
         int count =-1;
         for(int i=0;i<4;i++)
@@ -201,20 +275,18 @@ public class GameBoard extends JPanel {
                 cards[++count]=new Card(type[i],j,UPSIDE);
             }
         Random generator = new Random();
+        for (int k=0;k<10;k++)//洗牌10次
         for (int i = 0; i < 52; i++) {
             int j = Math.abs(generator.nextInt() % 52);
             Card temp = cards[i];
             cards[i]=cards[j];
             cards[j]=temp;
         }
-        drawPile=new DrawPile(200,200,96,130);
-
-        piles[0]= new CardPile(500,200,96,130,0);
-        piles[1]= new CardPile(600,200,96,130,0);
-        piles[2]= new CardPile(700,200,96,130,0);
-        piles[3]= new CardPile(800,200,96,130,0);
+        drawPile=new DrawPile(320,100,CARDWIDTH,CARDHEIGHT);
+        for(int i=3;i<7;i++)
+        piles[i-3]= new CardPile(200+120*i,100,CARDWIDTH,CARDHEIGHT,0);
         for(int i=0;i<7;i++){
-            deskPiles[i]=new DeskPile(200+120*i,400,96,130,0);
+            deskPiles[i]=new DeskPile(200+120*i,350,CARDWIDTH,CARDHEIGHT,0);
         }
         for(int i=0;i<7;i++){
             for(int j=i;j>=0;j--){
