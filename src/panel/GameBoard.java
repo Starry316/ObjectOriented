@@ -1,12 +1,17 @@
-import javax.imageio.ImageIO;
+package panel;
+
+import card.Card;
+import pile.CardPile;
+import pile.DeskPile;
+import pile.DrawPile;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+import static javax.swing.JOptionPane.showMessageDialog;
 import static util.Constant.*;
 
 /**
@@ -25,7 +30,7 @@ public class GameBoard extends JPanel {
     private int timeCountS;
     private int timeCountM;
     private boolean startFlag=false;
-    private Main mainBoard = null;
+    private boolean showed=false;
     private int type[] ={HEART,DIAMOND,SPADE,CLUB};
     private Card cards[];
     private Card movingCard;
@@ -36,27 +41,25 @@ public class GameBoard extends JPanel {
     private CardPile originPile;
     private DeskPile originDeskPile;
     private Button restartButton;
-    private Image table;
 
-    public GameBoard(int width, int height, Main mainBoard) {
 
-        this.mainBoard = mainBoard;
+    public GameBoard(int width, int height) {
         this.height = height;
         this.width = width;
         setLayout(null);
         setBounds(x_loacte, y_loacte, width, height);
-        try {
-            table = ImageIO.read(new File("picture/table.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         setVisible(true);
         setFocusable(true);
-
+        //添加监听器
         addMouseListener(new MouseAdapter() {
+            /**
+             * 添加拖动的监听
+             * 同时检测选中的牌堆以及选中的牌
+             * @param e
+             */
             @Override
             public void mousePressed(MouseEvent e) {
-             //   super.mousePressed(e);
+
                 if(!startFlag)startFlag=true; //记录游戏开始
                 for(CardPile i:piles)
                     if(i.checkSelected(e.getX(),e.getY())){
@@ -69,8 +72,7 @@ public class GameBoard extends JPanel {
                         selectedPile=CARDPILE;
                     }
                 for(DeskPile i:deskPiles) {
-                        int n=i.checkSelected(e.getX(), e.getY());
-                      //  System.out.println(n);
+                        int n=i.checkSelectedNum(e.getX(), e.getY());
                         if (n > 0) {
                         movingCards = i.peek(n);
                         originDeskPile = i;
@@ -94,6 +96,12 @@ public class GameBoard extends JPanel {
 
             }
 
+            /**
+             * 鼠标点击的监听器，用于检测右键和左键
+             * 点击右键自动检测可以移动到CardPile牌堆的牌
+             *
+             * @param e
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -114,27 +122,29 @@ public class GameBoard extends JPanel {
                     for(CardPile j:piles){
                         if(drawPile.getPos()>=0&&j.checkMoveIn(drawPile.peek())){
                             j.pushCard(drawPile.pop());
-                            System.out.println("可以移动draw");
+                            System.out.println("可以移动");
                             return;
                         }
                     }
                 }
-                else if(drawPile.checkClicked(e.getX(),e.getY()))drawPile.change();
+                else if(drawPile.checkClicked(e.getX(),e.getY()))drawPile.change(); //左键点击到drawPile的话，drawPile切换
 
             }
 
-
+            /**
+             * 检测鼠标移动，目前只用于restart按钮的颜色变化
+             * @param e
+             */
             @Override
             public void mouseMoved(MouseEvent e) {
-               // super.mouseMoved(e);
+
                 if (restartButton.checkIn(e.getX(),e.getY()))restartButton.setStatus(1);
 
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-//                System.out.println(movingCard.getNumber());
-           //     super.mouseReleased(e);
+
                 if(movingCard!=null){
                     for(CardPile i:piles){
                         if(i.checkMoveIn(movingCard,movingCard.getMiddleX(),movingCard.getMiddleY())) {
@@ -209,18 +219,32 @@ public class GameBoard extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(startFlag)timeCountS+=16;
-        if (timeCountS>60000){
-            timeCountS-=60000;
-            timeCountM++;
+        //获胜后的弹窗
+        if(isWin()){
+            if(!showed) {
+                showed = true;
+                showCongratulations();
+            }
+
+        }
+        else {
+            //获胜后停止计时
+            if (startFlag) timeCountS += 16;
+            if (timeCountS > 60000) {
+                timeCountS -= 60000;
+                timeCountM++;
+            }
         }
         Graphics2D gg = (Graphics2D) g;
        // gg.drawImage(table,0,0,width,height,null);
         gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        //绘制背景颜色
         gg.setColor(new Color(129,194,214));
         gg.fillRect(0,0,width,height);
+        //绘制最上方的工具栏
         gg.setColor(new Color(29,176,184));
         gg.fillRect(0,0,width,60);
+        //绘制时间和restart按钮
         gg.setColor(Color.white);
         gg.setFont(new Font("Arial",Font.BOLD, 30));
         if (timeCountS/1000<10)
@@ -228,6 +252,7 @@ public class GameBoard extends JPanel {
         else
             gg.drawString("Time "+timeCountM+":"+(timeCountS/1000)+"",200,40);
         restartButton.paintButton(gg);
+        //绘制各个牌堆的牌
         for(CardPile i :piles){
             i.paintCardPile(gg,movingCard);
         }
@@ -241,6 +266,10 @@ public class GameBoard extends JPanel {
         for(Card i:movingCards)
             i.paintSelectedCard(gg);
     }
+
+    /**
+     * 初始化，不重新洗牌
+     */
     public void InitWithoutWashCards() {
         timeCountS=0;
         timeCountM=0;
@@ -263,6 +292,10 @@ public class GameBoard extends JPanel {
 
         while (count>=0)drawPile.pushCard(cards[count--]);
     }
+
+    /**
+     * 初始化，洗牌
+     */
     public void Init() {
         timeCountS=0;
         timeCountM=0;
@@ -300,6 +333,10 @@ public class GameBoard extends JPanel {
 
 
     }
+
+    /**
+     * 从原来的牌堆中pop出移动的牌
+     */
     private void originPilePOP(){
         switch (selectedPile){
             case DESKPILE : originDeskPile.pop();break;
@@ -307,6 +344,11 @@ public class GameBoard extends JPanel {
             case DRAWPILE : drawPile.pop();break;
         }
     }
+
+    /**
+     * 检测是否获胜
+     * @return
+     */
     private boolean isWin(){
         int sum=0;
         for(CardPile i:piles){
@@ -315,15 +357,24 @@ public class GameBoard extends JPanel {
         if (sum==52)return true;
         return false;
     }
+
+    /**
+     * 显示获胜的提示框
+     */
+    private void showCongratulations(){
+        showMessageDialog(this,"Congratulations!");
+    }
+
+    /**
+     * 绘制线程
+     */
     private class paintThread extends Thread{
         @Override
         public void run() {
             while(true){
                 repaint();
-
                 try {
-                    Thread.sleep(16);
-
+                    Thread.sleep(16);//每秒约60帧
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;

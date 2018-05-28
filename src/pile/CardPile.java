@@ -1,9 +1,10 @@
+package pile;
+
+import card.Card;
 import util.ImagePool;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 import static util.Constant.CARDHEIGHT;
 import static util.Constant.CARDWIDTH;
@@ -11,15 +12,9 @@ import static util.Constant.CARDWIDTH;
 /**
  * Created by Starry on 2018/4/28.
  */
-public class CardPile extends JPanel {
-        private int position_x;
-        private int position_y;
-        private int width;
-        private int height;
-        private int number;
+public class CardPile  extends Pile {
         private Stack<Card> pile;
         public CardPile (){
-
         }
         public CardPile (int position_x ,int position_y,int width,int height,int number){
             this.position_x=position_x;
@@ -29,10 +24,10 @@ public class CardPile extends JPanel {
             this.height=height;
             pile=new Stack<Card>();
         }
-        public void paintCardPile(Graphics2D g,Card movingCard){
+        //绘制方法 ， 在实际应用中做了修改，加了参数，没有重载父类方法
+        public void paintCardPile(Graphics2D g, Card movingCard){
             Stroke s =g.getStroke();
             g.setColor(Color.cyan);
-           // g.drawRect(position_x,position_y,width,height);
             g.drawImage(ImagePool.pileImage, position_x, position_y, CARDWIDTH, CARDHEIGHT, null);
             g.setStroke(s);
             for(Card i :pile){
@@ -44,20 +39,23 @@ public class CardPile extends JPanel {
             }
         }
         public void pushCard(Card card){
-//            if(number==0) {
-//                card.setPosition_y(position_y);
-//                card.setPosition_x(position_x);
-//            }
-//            else {
-//                card.setPosition_x(position_x);
-//                card.setPosition_y(position_y+margin*number);
-//            }
             card.setPosition_y(position_y);
             card.setPosition_x(position_x);
             pile.push(card);
             number++;
         }
-        public boolean checkSelected(int x ,int y){
+
+    @Override
+    public void paintCardPile(Graphics2D g) {
+
+    }
+
+    @Override
+    public boolean checkClicked(int x, int y) {
+        return false;
+    }
+    @Override
+    public boolean checkSelected(int x , int y){
             if(number>0)
             if(Math.abs(x-(position_x+width/2))<width/2&&Math.abs(y-(position_y+height/2))<height/2)
                 return true;
@@ -73,7 +71,8 @@ public class CardPile extends JPanel {
         public Card peek(){
             return pile.peek();
         }
-        public boolean checkMoveIn(Card card ,int x,int y){
+        @Override
+        public boolean checkMoveIn(Card card , int x, int y){
 
             if(Math.abs(x-(position_x+width/2))<width/2&&Math.abs(y-(position_y+height/2))<height/2) {
 

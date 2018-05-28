@@ -1,3 +1,5 @@
+package panel;
+
 import util.ImagePool;
 
 import javax.swing.*;

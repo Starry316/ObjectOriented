@@ -1,3 +1,7 @@
+package pile;
+
+import card.Card;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -8,12 +12,7 @@ import static util.Constant.UPSIDE;
 /**
  * Created by Starry on 2018/4/28.
  */
-public class DeskPile  {
-    private int position_x;
-    private int position_y;
-    private int width;
-    private int height;
-    private int number;
+public class DeskPile extends Pile  {
     private int margin =40;
     private Stack<Card> pile;
     public DeskPile(){
@@ -27,7 +26,7 @@ public class DeskPile  {
         this.number=number;
         pile=new Stack<Card>();
     }
-
+    //绘制方法，后面修改后加了参数，没有继承父类方法
     public void paintCardPile(Graphics2D g,List<Card> movingCards){
         Stroke s =g.getStroke();
         g.setColor(Color.cyan);
@@ -67,7 +66,23 @@ public class DeskPile  {
             number++;
         }
     }
-    public int checkSelected(int x ,int y) {
+
+    @Override
+    public void paintCardPile(Graphics2D g) {
+
+    }
+
+    @Override
+    public boolean checkClicked(int x, int y) {
+        return false;
+    }
+
+    @Override
+    public boolean checkSelected(int x, int y) {
+        return false;
+    }
+
+    public int checkSelectedNum(int x , int y) {
         if (number == 1)
             if (Math.abs(x - (position_x + width / 2)) < width / 2 && Math.abs(y - (position_y + height / 2)) < height / 2)
                 return 1;
@@ -129,7 +144,7 @@ public class DeskPile  {
             list.add(pile.get(number-i));
         return list;
     }
-    public boolean checkMoveIn(Card card ,int x,int y){
+    public boolean checkMoveIn(Card card , int x, int y){
 
         if(Math.abs(x-(position_x+width/2))<width/2) {
             if (this.number>0&&(Math.abs(y-(position_y+height/2)-margin*(number-1))<height/2)&&pile.peek().getNumber() == card.getNumber() + 1 && Math.abs(pile.peek().getType() - card.getType())>=2)

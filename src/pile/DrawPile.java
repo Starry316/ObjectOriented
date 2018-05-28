@@ -1,6 +1,8 @@
+package pile;
+
 import util.ImagePool;
 
-import javax.swing.*;
+import card.Card;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -11,13 +13,7 @@ import static util.Constant.CARDWIDTH;
 /**
  * Created by Starry on 2018/4/28.
  */
-public class DrawPile extends JPanel {
-    private int position_x;
-    private int position_y;
-    private int width;
-    private int height;
-    private int number;
-    private List<Card> pile=new LinkedList<Card>();
+public class DrawPile extends Pile {
     private int pos;
     public DrawPile (){
 
@@ -52,6 +48,12 @@ public class DrawPile extends JPanel {
                 return true;
         return false;
     }
+
+    @Override
+    public boolean checkMoveIn(Card card, int x, int y) {
+        return false;
+    }
+
     public void clear(){
         pile.clear();
         number=0;
