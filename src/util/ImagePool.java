@@ -10,6 +10,7 @@ import static util.Constant.*;
 
 /**
  * Created by Starry on 2018/5/11.
+ * 用于加载图片
  */
 public class ImagePool {
     public static Image[][] cardImages=new Image[4][13];

@@ -11,6 +11,7 @@ import static util.Constant.UPSIDE;
 
 /**
  * Created by Starry on 2018/4/28.
+ * 这个类代表桌子上的七个牌堆
  */
 public class DeskPile extends Pile  {
     private int margin =40;
@@ -41,6 +42,11 @@ public class DeskPile extends Pile  {
             else i.paintCard(g);
         }
     }
+
+    /**
+     * 将牌加入栈
+     * @param card
+     */
     public void pushCard(Card card){
             if(number==0) {
                 card.setPosition_y(position_y);
@@ -53,6 +59,11 @@ public class DeskPile extends Pile  {
         pile.push(card);
         number++;
     }
+
+    /**
+     * 将好几张牌加入栈
+     * @param cards
+     */
     public void pushCard(List<Card> cards){
         for(int i=0;i<cards.size();i++) {
             if (number == 0) {
@@ -82,6 +93,12 @@ public class DeskPile extends Pile  {
         return false;
     }
 
+    /**
+     * 检测选中的牌的个数
+     * @param x
+     * @param y
+     * @return 选中的牌的个数
+     */
     public int checkSelectedNum(int x , int y) {
         if (number == 1)
             if (Math.abs(x - (position_x + width / 2)) < width / 2 && Math.abs(y - (position_y + height / 2)) < height / 2)
@@ -107,6 +124,11 @@ public class DeskPile extends Pile  {
             }
             return 0;
     }
+
+    /**
+     * 返回最上方牌，并且从牌堆移除
+     * @return
+     */
     public Card pop(){
         if(number>0){
             number--;
@@ -118,6 +140,12 @@ public class DeskPile extends Pile  {
         }
         return null;
     }
+
+    /**
+     * 返回最上方n张牌，并且从牌堆移除
+     * @param n
+     * @return
+     */
     public List<Card> pop(int n){
         List<Card> list=new LinkedList<Card>();
         if(number>=n){
@@ -133,17 +161,36 @@ public class DeskPile extends Pile  {
         }
         return null;
     }
+
+    /**
+     * 返回最上方牌但是不将其从牌堆移除
+     * @return
+     */
     public Card peek(){
         if(number>0)
         return pile.peek();
         return null;
     }
+
+    /**
+     * 返回最上方的n张牌但是不将其从牌堆移除
+     * @param n
+     * @return
+     */
     public List<Card> peek(int n){
         List<Card> list = new LinkedList<Card>();
         for(int i=n;i>0;i--)
             list.add(pile.get(number-i));
         return list;
     }
+
+    /**
+     * 检测是否能将牌移入牌堆
+     * @param card
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean checkMoveIn(Card card , int x, int y){
 
         if(Math.abs(x-(position_x+width/2))<width/2) {
@@ -153,6 +200,14 @@ public class DeskPile extends Pile  {
         }
         return false;
     }
+
+    /**
+     * 检测是否能放入牌堆
+     * @param cards
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean checkMoveIn(java.util.List<Card> cards , int x, int y){
         if(Math.abs(x-(position_x+width/2))<width/2)
             if((number==0&&(Math.abs(y-(position_y+height/2))<height/2))||(number>0&&(Math.abs(y-(position_y+height/2)-margin*(number-1))<height/2))){

@@ -11,6 +11,7 @@ import static util.Constant.CARDWIDTH;
 
 /**
  * Created by Starry on 2018/4/28.
+ * 这个类是最后放置牌的牌堆
  */
 public class CardPile  extends Pile {
         private Stack<Card> pile;
@@ -61,18 +62,18 @@ public class CardPile  extends Pile {
                 return true;
             return false;
         }
-        public Card pop(){
+    public Card pop(){
             if(number>0){
                 number--;
                 return pile.pop();
             }
             return null;
         }
-        public Card peek(){
+    public Card peek(){
             return pile.peek();
         }
-        @Override
-        public boolean checkMoveIn(Card card , int x, int y){
+    @Override
+    public boolean checkMoveIn(Card card , int x, int y){
 
             if(Math.abs(x-(position_x+width/2))<width/2&&Math.abs(y-(position_y+height/2))<height/2) {
 
@@ -82,7 +83,7 @@ public class CardPile  extends Pile {
             }
             return false;
         }
-        public boolean checkMoveIn(Card card){
+    public boolean checkMoveIn(Card card){
             if (this.number>0&&pile.peek().getNumber() == card.getNumber() - 1 && pile.peek().getType() == card.getType())
                 return true;
             else if (this.number == 0 && card.getNumber() == 1) return true;
@@ -90,29 +91,29 @@ public class CardPile  extends Pile {
         }
 
 
-        public int getPosition_x() {
+    public int getPosition_x() {
             return position_x;
         }
 
-        public void setPosition_x(int position_x) {
+    public void setPosition_x(int position_x) {
             this.position_x = position_x;
         }
 
-        public int getPosition_y() {
+    public int getPosition_y() {
             return position_y;
         }
 
-        public void setPosition_y(int position_y) {
+    public void setPosition_y(int position_y) {
             this.position_y = position_y;
         }
 
 
 
-        public int getNumber() {
+    public int getNumber() {
             return number;
         }
 
-        public void setNumber(int number) {
+    public void setNumber(int number) {
             this.number = number;
         }
 

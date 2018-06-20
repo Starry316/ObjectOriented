@@ -12,6 +12,7 @@ import static util.Constant.CARDWIDTH;
 
 /**
  * Created by Starry on 2018/4/28.
+ * 这个类是抽牌的牌堆
  */
 public class DrawPile extends Pile {
     private int pos;
@@ -33,15 +34,33 @@ public class DrawPile extends Pile {
             pile.get(i).paintCard(g);
         }
     }
+
+    /**
+     * 切换显示在最上方的牌
+     */
     public void change(){
         pos--;
         if(pos<0)pos=number-1;
     }
+
+    /**
+     * 检测是否点击
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean checkClicked(int x ,int y){
         if(Math.abs(x-(position_x-120+width/2))<width/2&&Math.abs(y-(position_y+height/2))<height/2)
                 return true;
         return false;
     }
+
+    /**
+     * 检测是否选中
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean checkSelected(int x ,int y){
         if(number>0)
             if(Math.abs(x-(position_x+width/2))<width/2&&Math.abs(y-(position_y+height/2))<height/2)
@@ -54,11 +73,19 @@ public class DrawPile extends Pile {
         return false;
     }
 
+    /**
+     * 清空牌堆中的牌
+     */
     public void clear(){
         pile.clear();
         number=0;
         pos=0;
     }
+
+    /**
+     * 返回最上方的牌并移出牌堆
+     * @return
+     */
     public Card pop(){
         if(number>0){
             number--;
@@ -69,6 +96,11 @@ public class DrawPile extends Pile {
         }
         return null;
     }
+
+    /**
+     * 返回最上方的牌但是不移出牌堆
+     * @return
+     */
     public Card peek(){
         if(pos<0){
            // /pos=number-1;
@@ -79,6 +111,10 @@ public class DrawPile extends Pile {
         return pile.get(pos);
     }
 
+    /**
+     * 将新牌push进来
+     * @param card
+     */
     public void pushCard(Card card){
         pile.add(card);number++;
         card.setPosition_x(position_x);

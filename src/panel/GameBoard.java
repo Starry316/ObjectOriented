@@ -1,16 +1,21 @@
 package panel;
 
 import card.Card;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import pile.CardPile;
 import pile.DeskPile;
 import pile.DrawPile;
+import util.HttpClient4;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
+import static javax.swing.JOptionPane.showInputDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static util.Constant.*;
 
@@ -41,6 +46,7 @@ public class GameBoard extends JPanel {
     private CardPile originPile;
     private DeskPile originDeskPile;
     private Button restartButton;
+
 
 
     public GameBoard(int width, int height) {
@@ -217,6 +223,10 @@ public class GameBoard extends JPanel {
 
     }
 
+    /**
+     * repaint()调用的绘制方法
+     * @param g
+     */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         //获胜后的弹窗
@@ -265,6 +275,7 @@ public class GameBoard extends JPanel {
         if(movingCards!=null)
         for(Card i:movingCards)
             i.paintSelectedCard(gg);
+        //rankList.paintRankList(gg);
     }
 
     /**
@@ -362,7 +373,37 @@ public class GameBoard extends JPanel {
      * 显示获胜的提示框
      */
     private void showCongratulations(){
-        showMessageDialog(this,"Congratulations!");
+        //连接服务器 获取排行榜
+        String res =HttpClient4.doGet("http://119.29.52.224:8083/getRankList");
+        JSONArray jsonArray =JSONArray.fromObject(res);
+        //System.out.println(jsonArray);
+        String mes ="您所用时间为："+timeCountM;
+        if (timeCountS/1000<10)
+            mes+=":0"+(timeCountS/1000)+"\n";
+        else
+            mes+=":"+(timeCountS/1000)+"\n";
+        mes+="排行榜：\n";
+        for(int i=0;i<jsonArray.size();i++){
+            JSONObject t =JSONObject.fromObject(jsonArray.get(i));
+            String time = t.get("time").toString();
+            int timeM= Integer.parseInt(time)/60;
+            int timeS= Integer.parseInt(time)%60;
+            mes+=(i+1)+". "+t.get("name")+"             ";
+            if (timeS<10)
+                mes+=timeM+":0"+timeS+"\n";
+            else
+                mes+=timeM+":"+timeS+"\n";
+        }
+        mes+="请输入您的名字：";
+        String name = JOptionPane.showInputDialog(this,mes ,"Congratulations!",JOptionPane.PLAIN_MESSAGE);
+        //如果名字不为空，上传记录到服务器
+        if(name!=null&&name.length()>0){
+            Map<String, Object> paramMap =new HashMap<String,Object>();
+            paramMap.put("name",name);
+            int timeSend = timeCountM*60+(timeCountS/1000);
+            paramMap.put("time",timeSend+"");
+            HttpClient4.doPost("http://119.29.52.224:8083/updateRankList",paramMap);
+        }
     }
 
     /**
@@ -371,6 +412,7 @@ public class GameBoard extends JPanel {
     private class paintThread extends Thread{
         @Override
         public void run() {
+          //  System.out.println(piles.toString());
             while(true){
                 repaint();
                 try {

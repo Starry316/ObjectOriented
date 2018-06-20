@@ -2,6 +2,7 @@ package util;
 
 /**
  * Created by Starry on 2018/4/11.
+ * 放置常量
  */
 public  class Constant {
     public final static int DIAMOND = 1; //方片
