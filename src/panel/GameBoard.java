@@ -6,7 +6,7 @@ import net.sf.json.JSONObject;
 import pile.CardPile;
 import pile.DeskPile;
 import pile.DrawPile;
-import util.HttpClient4;
+
 
 import javax.print.DocFlavor;
 import javax.swing.*;
@@ -374,36 +374,36 @@ public class GameBoard extends JPanel {
      */
     private void showCongratulations(){
         //连接服务器 获取排行榜
-        String res =HttpClient4.doGet("http://119.29.52.224:8083/getRankList");
-        JSONArray jsonArray =JSONArray.fromObject(res);
+//        String res =HttpClient4.doGet("http://119.29.52.224:8083/getRankList");
+//        JSONArray jsonArray =JSONArray.fromObject(res);
         //System.out.println(jsonArray);
-        String mes ="您所用时间为："+timeCountM;
-        if (timeCountS/1000<10)
-            mes+=":0"+(timeCountS/1000)+"\n";
-        else
-            mes+=":"+(timeCountS/1000)+"\n";
-        mes+="排行榜：\n";
-        for(int i=0;i<jsonArray.size();i++){
-            JSONObject t =JSONObject.fromObject(jsonArray.get(i));
-            String time = t.get("time").toString();
-            int timeM= Integer.parseInt(time)/60;
-            int timeS= Integer.parseInt(time)%60;
-            mes+=(i+1)+". "+t.get("name")+"             ";
-            if (timeS<10)
-                mes+=timeM+":0"+timeS+"\n";
-            else
-                mes+=timeM+":"+timeS+"\n";
-        }
-        mes+="请输入您的名字：";
-        String name = JOptionPane.showInputDialog(this,mes ,"Congratulations!",JOptionPane.PLAIN_MESSAGE);
-        //如果名字不为空，上传记录到服务器
-        if(name!=null&&name.length()>0){
-            Map<String, Object> paramMap =new HashMap<String,Object>();
-            paramMap.put("name",name);
-            int timeSend = timeCountM*60+(timeCountS/1000);
-            paramMap.put("time",timeSend+"");
-            HttpClient4.doPost("http://119.29.52.224:8083/updateRankList",paramMap);
-        }
+//        String mes ="您所用时间为："+timeCountM;
+//        if (timeCountS/1000<10)
+//            mes+=":0"+(timeCountS/1000)+"\n";
+//        else
+//            mes+=":"+(timeCountS/1000)+"\n";
+//        mes+="排行榜：\n";
+//        for(int i=0;i<jsonArray.size();i++){
+//            JSONObject t =JSONObject.fromObject(jsonArray.get(i));
+//            String time = t.get("time").toString();
+//            int timeM= Integer.parseInt(time)/60;
+//            int timeS= Integer.parseInt(time)%60;
+//            mes+=(i+1)+". "+t.get("name")+"             ";
+//            if (timeS<10)
+//                mes+=timeM+":0"+timeS+"\n";
+//            else
+//                mes+=timeM+":"+timeS+"\n";
+//        }
+//        mes+="请输入您的名字：";
+//        String name = JOptionPane.showInputDialog(this,mes ,"Congratulations!",JOptionPane.PLAIN_MESSAGE);
+//        //如果名字不为空，上传记录到服务器
+//        if(name!=null&&name.length()>0){
+//            Map<String, Object> paramMap =new HashMap<String,Object>();
+//            paramMap.put("name",name);
+//            int timeSend = timeCountM*60+(timeCountS/1000);
+//            paramMap.put("time",timeSend+"");
+//            HttpClient4.doPost("http://119.29.52.224:8083/updateRankList",paramMap);
+//        }
     }
 
     /**
